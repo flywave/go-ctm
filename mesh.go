@@ -196,3 +196,30 @@ func (m *Mesh) GetAttribMap(aName string) []float32 {
 	}
 	return nil
 }
+
+func (m *Mesh) AddColor(colors [][4]float32) {
+	var colorsSlice []float32
+	colorsHeader := (*reflect.SliceHeader)((unsafe.Pointer(&colorsSlice)))
+	colorsHeader.Cap = int(len(colors) * 4)
+	colorsHeader.Len = int(len(colors) * 4)
+	colorsHeader.Data = uintptr(unsafe.Pointer(&colors[0]))
+
+	m.ctx.AddAttribMap(colorsSlice, "Color")
+}
+
+func (m *Mesh) GetColor() [][4]float32 {
+	mod := m.ctx.GetNamedAttribMap("Color")
+	if mod != CTM_NONE {
+		size := m.GetVertCount()
+		data := m.ctx.GetFloatArray(mod)
+
+		var bufSlice [][4]float32
+		bufHeader := (*reflect.SliceHeader)((unsafe.Pointer(&bufSlice)))
+		bufHeader.Cap = int(size)
+		bufHeader.Len = int(size)
+		bufHeader.Data = uintptr(unsafe.Pointer(data))
+
+		return bufSlice
+	}
+	return nil
+}
