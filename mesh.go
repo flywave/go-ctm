@@ -18,6 +18,10 @@ func LoadMesh(path string) *Mesh {
 	return m
 }
 
+func NewEmptyMesh() *Mesh {
+	return &Mesh{ctx: NewContext(CTM_IMPORT)}
+}
+
 func NewMesh(vertices []vec3.T, indices [][3]uint32, normals []vec3.T) *Mesh {
 	var verticesSlice []float32
 	verticesHeader := (*reflect.SliceHeader)((unsafe.Pointer(&verticesSlice)))
