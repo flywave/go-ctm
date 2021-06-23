@@ -5,6 +5,7 @@ package ctm
 #include <stdlib.h>
 #cgo CFLAGS: -I ./
 #cgo linux LDFLAGS:  -L ./lib -L /usr/lib/x86_64-linux-gnu -Wl,--start-group  -lm -pthread -ldl -Wl,--end-group
+
 extern CTMuint readerHelper(void * aBuf, CTMuint aCount, void * aUserData);
 
 inline void ctmLoadStream(CTMcontext aContext, void * aUserData) {
@@ -172,7 +173,21 @@ func (c *Context) Save(aName string) {
 
 //export readerHelper
 func readerHelper(aBuf unsafe.Pointer, aCount C.CTMuint, aUserData unsafe.Pointer) C.CTMuint {
-	return C.CTMuint(0)
+	ctx := (*(**streamContext)(aUserData))
+
+	var bufsSlice []byte
+	bufsSHeader := (*reflect.SliceHeader)((unsafe.Pointer(&bufsSlice)))
+	bufsSHeader.Cap = int(aCount)
+	bufsSHeader.Len = int(aCount)
+	bufsSHeader.Data = uintptr(unsafe.Pointer(aBuf))
+
+	n, err := ctx.reader.Read(bufsSlice)
+
+	if err != nil {
+		return C.CTMuint(0)
+	}
+
+	return C.CTMuint(n)
 }
 
 type streamContext struct {
