@@ -5,10 +5,19 @@ package ctm
 #include <stdlib.h>
 #cgo CFLAGS: -I ./
 #cgo linux LDFLAGS:  -L ./lib -L /usr/lib/x86_64-linux-gnu -Wl,--start-group  -lm -pthread -ldl -Wl,--end-group
+extern CTMuint readerHelper(void * aBuf, CTMuint aCount, void * aUserData);
+
+inline void ctmLoadStream(CTMcontext aContext, void * aUserData) {
+  ctmLoadCustom(aContext, &readerHelper, aUserData);
+}
+
 */
 import "C"
 import (
+	"bytes"
 	"errors"
+	"io"
+	"reflect"
 	"runtime"
 	"unsafe"
 )
@@ -159,4 +168,38 @@ func (c *Context) Save(aName string) {
 	caName := C.CString(aName)
 	defer C.free(unsafe.Pointer(caName))
 	C.ctmSave(c.ctx, caName)
+}
+
+//export readerHelper
+func readerHelper(aBuf unsafe.Pointer, aCount C.CTMuint, aUserData unsafe.Pointer) C.CTMuint {
+	return C.CTMuint(0)
+}
+
+type streamContext struct {
+	reader io.Reader
+}
+
+func (c *Context) LoadFromBuffer(buf []byte) {
+	ctx := new(streamContext)
+	ctx.reader = bytes.NewBuffer(buf)
+	inptr := new(uintptr)
+	*inptr = uintptr(unsafe.Pointer(ctx))
+	C.ctmLoadStream(c.ctx, (unsafe.Pointer)(inptr))
+}
+
+func (c *Context) SaveToBuffer() []byte {
+	var si C.size_t
+	buf := C.ctmSaveToBuffer(c.ctx, &si)
+
+	defer C.ctmFreeBuffer(unsafe.Pointer(buf))
+
+	var bufsSlice []byte
+	bufsSHeader := (*reflect.SliceHeader)((unsafe.Pointer(&bufsSlice)))
+	bufsSHeader.Cap = int(si)
+	bufsSHeader.Len = int(si)
+	bufsSHeader.Data = uintptr(unsafe.Pointer(buf))
+
+	ret := make([]byte, int(si))
+	copy(ret, bufsSlice)
+	return ret
 }
