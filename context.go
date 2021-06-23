@@ -5,13 +5,7 @@ package ctm
 #include <stdlib.h>
 #cgo CFLAGS: -I ./
 #cgo linux LDFLAGS:  -L ./lib -L /usr/lib/x86_64-linux-gnu -Wl,--start-group  -lm -pthread -ldl -Wl,--end-group
-
-extern CTMuint readerHelper(void * aBuf, CTMuint aCount, void * aUserData);
-
-inline void ctmLoadStream(CTMcontext aContext, void * aUserData) {
-  ctmLoadCustom(aContext, &readerHelper, aUserData);
-}
-
+extern void ctmLoadStream(CTMcontext aContext, void * aUserData);
 */
 import "C"
 import (
