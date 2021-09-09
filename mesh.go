@@ -25,20 +25,20 @@ func NewEmptyMesh() *Mesh {
 func NewMesh(vertices []vec3.T, indices [][3]uint32, normals []vec3.T) *Mesh {
 	var verticesSlice []float32
 	verticesHeader := (*reflect.SliceHeader)((unsafe.Pointer(&verticesSlice)))
-	verticesHeader.Cap = int(len(vertices) * 3)
-	verticesHeader.Len = int(len(vertices) * 3)
+	verticesHeader.Cap = int(len(vertices))
+	verticesHeader.Len = int(len(vertices))
 	verticesHeader.Data = uintptr(unsafe.Pointer(&vertices[0]))
 
 	var indicesSlice []uint32
 	indicesHeader := (*reflect.SliceHeader)((unsafe.Pointer(&indicesSlice)))
-	indicesHeader.Cap = int(len(normals) * 3)
-	indicesHeader.Len = int(len(normals) * 3)
+	indicesHeader.Cap = int(len(indices))
+	indicesHeader.Len = int(len(indices))
 	indicesHeader.Data = uintptr(unsafe.Pointer(&indices[0]))
 
 	var normalsSlice []float32
 	normalsHeader := (*reflect.SliceHeader)((unsafe.Pointer(&normalsSlice)))
-	normalsHeader.Cap = int(len(normals) * 3)
-	normalsHeader.Len = int(len(normals) * 3)
+	normalsHeader.Cap = int(len(normals))
+	normalsHeader.Len = int(len(normals))
 	normalsHeader.Data = uintptr(unsafe.Pointer(&normals[0]))
 
 	m := &Mesh{ctx: NewContext(CTM_IMPORT)}
@@ -120,8 +120,8 @@ func (m *Mesh) GetVertices() []vec3.T {
 
 	var bufSlice []vec3.T
 	bufHeader := (*reflect.SliceHeader)((unsafe.Pointer(&bufSlice)))
-	bufHeader.Cap = int(size / 3)
-	bufHeader.Len = int(size / 3)
+	bufHeader.Cap = int(size)
+	bufHeader.Len = int(size)
 	bufHeader.Data = uintptr(unsafe.Pointer(data))
 
 	return bufSlice
@@ -133,8 +133,8 @@ func (m *Mesh) GetNormals() []vec3.T {
 
 	var bufSlice []vec3.T
 	bufHeader := (*reflect.SliceHeader)((unsafe.Pointer(&bufSlice)))
-	bufHeader.Cap = int(size / 3)
-	bufHeader.Len = int(size / 3)
+	bufHeader.Cap = int(size)
+	bufHeader.Len = int(size)
 	bufHeader.Data = uintptr(unsafe.Pointer(data))
 
 	return bufSlice
@@ -146,8 +146,8 @@ func (m *Mesh) GetFaces() [][3]uint32 {
 
 	var bufSlice [][3]uint32
 	bufHeader := (*reflect.SliceHeader)((unsafe.Pointer(&bufSlice)))
-	bufHeader.Cap = int(size / 3)
-	bufHeader.Len = int(size / 3)
+	bufHeader.Cap = int(size)
+	bufHeader.Len = int(size)
 	bufHeader.Data = uintptr(unsafe.Pointer(data))
 
 	return bufSlice
@@ -156,8 +156,8 @@ func (m *Mesh) GetFaces() [][3]uint32 {
 func (m *Mesh) AddUVMap(UVCoords []vec2.T, aName string, aFileName string) {
 	var uvsSlice []float32
 	uvsHeader := (*reflect.SliceHeader)((unsafe.Pointer(&uvsSlice)))
-	uvsHeader.Cap = int(len(UVCoords) * 2)
-	uvsHeader.Len = int(len(UVCoords) * 2)
+	uvsHeader.Cap = int(len(UVCoords))
+	uvsHeader.Len = int(len(UVCoords))
 	uvsHeader.Data = uintptr(unsafe.Pointer(&UVCoords[0]))
 
 	m.ctx.AddUVMap(uvsSlice, aName, aFileName)
@@ -204,8 +204,8 @@ func (m *Mesh) GetAttribMap(aName string) []float32 {
 func (m *Mesh) AddColor(colors [][4]float32) {
 	var colorsSlice []float32
 	colorsHeader := (*reflect.SliceHeader)((unsafe.Pointer(&colorsSlice)))
-	colorsHeader.Cap = int(len(colors) * 4)
-	colorsHeader.Len = int(len(colors) * 4)
+	colorsHeader.Cap = int(len(colors))
+	colorsHeader.Len = int(len(colors))
 	colorsHeader.Data = uintptr(unsafe.Pointer(&colors[0]))
 
 	m.ctx.AddAttribMap(colorsSlice, "Color")
